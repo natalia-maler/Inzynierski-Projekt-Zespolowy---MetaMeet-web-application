@@ -10,4 +10,4 @@ Celem systemu jest uproszczenie planowania spotkań zespołowych poprzez integra
 - Microsoft Teams
 - Azure Active Directory
 
-Aplikacja umożliwia szybkie sprawdzanie dostępności współpracowników, wybór wspólnego terminu oraz automatyczne tworzenie spotkań Microsoft Teams wraz z wysłaniem zaproszeń do uczestników.
+Aplikacja umożliwia szybkie sprawdzanie dostępności współpracowników, wybór wspólnego terminu oraz automatyczne tworzenie spotkań Microsoft Teams wraz z wysłaniem zaproszeń do uczestników. System eliminuje konieczność ręcznego przeglądania kalendarzy i znacząco skraca czas potrzebny na koordynację spotkań.
