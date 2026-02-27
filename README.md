@@ -12,7 +12,7 @@ Celem systemu jest uproszczenie planowania spotkań zespołowych poprzez integra
 
 Aplikacja umożliwia szybkie sprawdzanie dostępności współpracowników, wybór wspólnego terminu oraz automatyczne tworzenie spotkań Microsoft Teams wraz z wysłaniem zaproszeń do uczestników. System eliminuje konieczność ręcznego przeglądania kalendarzy i znacząco skraca czas potrzebny na koordynację spotkań.
 
-# Główne funkcjonalności
+## Główne funkcjonalności
 Uwierzytelnianie użytkownika
 - Logowanie przy użyciu konta Microsoft 365.
 - Integracja z Microsoft Entra ID (Azure AD).
@@ -45,3 +45,33 @@ Panel ustawień
 
 Tworzenie nowego użytkownika
 - Możliwość utworzenia nowego konta użytkownika z poziomu aplikacji (z wykorzystaniem Microsoft Graph i odpowiednich uprawnień aplikacyjnych).
+
+## Mój zakres odpowiedzialności w projekcie MetaMeet
+
+1. **Konfiguracja środowiska Microsoft 365 i Entra ID**
+   - Utworzenie konta administratora Microsoft 365 z aktywną płatną subskrypcją w celu umożliwienia korzystania z zaawansowanych funkcjonalności Microsoft Graph API.
+   - Rejestracja aplikacji w Azure Active Directory.
+   - Nadzór nad formalnymi aspektami integracji, w tym:
+     - nadawanie odpowiednich uprawnień aplikacyjnych i delegowanych,
+     - konfiguracja zakresów (scopes),
+     - obsługa zgód administracyjnych,
+     - zarządzanie identyfikatorami aplikacji oraz sekretami.
+
+2. **Integracja z Microsoft Graph API**
+   - Implementacja mechanizmu komunikacji aplikacji z Microsoft Graph API.
+   - Odpowiedzialność za poprawne pozyskiwanie tokenów dostępu OAuth 2.0.
+
+3. **Obsługa logowania i autoryzacji użytkowników**
+   - Implementacja logowania użytkowników przy użyciu kont Microsoft 365.
+
+4. **Logika analizy dostępności kalendarzy**
+   - Analiza dostępności kalendarzy użytkowników.
+   - Porównywanie terminów pomiędzy członkami zespołu.
+   - Wybór użytkowników do spotkań.
+
+5. **Automatyczne przypisywanie licencji Microsoft 365**
+   - Implementacja logiki automatycznego przypisywania licencji podczas tworzenia nowego użytkownika.
+
+6. **Implementacja zakładki "Moje spotkania"**
+   - Zaprojektowanie i implementacja zakładki umożliwiającej zarządzanie spotkaniami (anulowanie, odrzucanie, dołączanie, przywracanie).
+   - Integracja widoku z logiką Microsoft Graph API oraz synchronizacja z kalendarzem Outlook.
