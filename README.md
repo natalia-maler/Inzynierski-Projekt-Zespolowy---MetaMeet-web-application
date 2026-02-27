@@ -51,11 +51,7 @@ Aplikacja umożliwia szybkie sprawdzanie dostępności współpracowników, wyb�
 1. **Konfiguracja środowiska Microsoft 365 i Entra ID**
    - Utworzenie konta administratora Microsoft 365 z aktywną płatną subskrypcją w celu umożliwienia korzystania z zaawansowanych funkcjonalności Microsoft Graph API.
    - Rejestracja aplikacji w Azure Active Directory.
-   - Nadzór nad formalnymi aspektami integracji, w tym:
-     - nadawanie odpowiednich uprawnień aplikacyjnych i delegowanych,
-     - konfiguracja zakresów (scopes),
-     - obsługa zgód administracyjnych,
-     - zarządzanie identyfikatorami aplikacji oraz sekretami.
+   - Nadzór nad formalnymi aspektami integracji, w tym: nadawanie odpowiednich uprawnień aplikacyjnych i delegowanych, konfiguracja zakresów (scopes), obsługa zgód administracyjnych,
 
 2. **Integracja z Microsoft Graph API**
    - Implementacja mechanizmu komunikacji aplikacji z Microsoft Graph API.
