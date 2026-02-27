@@ -1,6 +1,8 @@
 # Inzynierski-Projekt-Zespolowy
 ## MetaMeet
 
+[Prezentacja działania aplikacji](https://www.canva.com/design/DAG_64Qe9Mk/bcJn3O1ir2cBdfyaPlW5fg/edit)
+
 MetaMeet to webowa aplikacja użytkowa wspomagająca organizację spotkań online w środowisku Microsoft 365.
 Projekt został zrealizowany zespołowo w ramach pracy grupowej.
 
