@@ -1,5 +1,5 @@
 # Inzynierski-Projekt-Zespolowy
-## MetaMeet
+## MetaMeet - Inteligentny system do umawiania spotkań pomiędzy firmami
 
 [Prezentacja działania aplikacji](https://www.canva.com/design/DAG_64Qe9Mk/QBbDB13HXbI9NO1mwoTtqg/watch?utm_content=DAG_64Qe9Mk&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=he6c51cbb67)
 
