@@ -1,0 +1,9 @@
+# Wygenerowane pliki i foldery
+[Bb]in/
+[Oo]bj/
+# Konfiguracja Visual Studio
+.vs/
+# Inne standardowe wykluczenia
+*.log
+*.user
+*.suo
