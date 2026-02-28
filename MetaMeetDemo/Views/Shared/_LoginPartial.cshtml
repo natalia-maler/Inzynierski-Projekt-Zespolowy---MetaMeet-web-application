@@ -1,0 +1,84 @@
+﻿@using System.Security.Principal
+
+<style>
+    .user-nav-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding-right: 15px;
+    }
+
+    .user-name-badge {
+        font-family: 'Segoe UI', sans-serif;
+        font-weight: 700;
+        font-size: 14px;
+        color: #1f2937;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #f3f4f6;
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+
+    .logout-link {
+        font-family: 'Segoe UI', sans-serif;
+        color: #6b7280;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: color 0.2s;
+        padding: 5px 10px;
+    }
+
+        .logout-link:hover {
+            color: #7c3aed;
+        }
+
+    .login-btn {
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #6264A7 0%, #8B8DC8 100%);
+        color: white !important;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: none;
+        display: inline-block;
+    }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(98, 100, 167, 0.3);
+            color: white !important;
+        }
+</style>
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li class="nav-item">
+            <div class="user-nav-container">
+                <span class="user-name-badge">
+                    👤 @User.Identity.Name
+                </span>
+
+                <a class="logout-link" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">
+                    Wyloguj
+                </a>
+            </div>
+        </li>
+    </ul>
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li class="nav-item" style="display:flex; align-items:center;">
+            <a class="login-btn" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">
+                Zaloguj się
+            </a>
+        </li>
+    </ul>
+}

@@ -1,0 +1,340 @@
+﻿@{
+    ViewData["Title"] = "Mój Kalendarz";
+}
+
+<style>
+    :root {
+        --text-main: #1f2937;
+        --text-muted: #6b7280;
+        --primary-purple: #6264A7;
+        --primary-hover: #4e5085;
+        --light-purple: #EEF0F8;
+        --border-color: #e5e7eb;
+        --card-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        --card-radius: 6px;
+    }
+
+    body {
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .container-calendar {
+        max-width: 1400px;
+        margin: 40px auto;
+        width: 95%;
+    }
+
+    h1 {
+        color: var(--text-main);
+        margin-bottom: 30px;
+        font-size: 28px;
+        font-weight: 700;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .header-logo {
+        width: 36px;
+        height: 36px;
+        object-fit: contain;
+    }
+
+    .calendar-controls {
+        background: white;
+        padding: 15px;
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .nav-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-nav {
+        background: white;
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 600;
+    }
+
+        .btn-nav:hover {
+            background: var(--light-purple);
+            color: var(--primary-purple);
+            border-color: var(--primary-purple);
+        }
+
+    .btn-today {
+        background: var(--primary-purple);
+        color: white;
+        border: none;
+        padding: 6px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+        .btn-today:hover {
+            background: var(--primary-hover);
+        }
+
+    .form-select-custom {
+        padding: 6px 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        color: var(--text-main);
+        outline: none;
+        cursor: pointer;
+    }
+
+        .form-select-custom:focus {
+            border-color: var(--primary-purple);
+        }
+
+    .calendar-wrapper {
+        background: white;
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        min-height: 600px;
+        position: relative;
+    }
+
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+    }
+
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+    .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid var(--primary-purple);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .source-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-right: 8px;
+    }
+</style>
+
+<div class="container-calendar">
+
+    <h1>
+        <img src="/img/1000019468.svg" class="header-logo" alt="Logo" />
+        Mój Kalendarz
+    </h1>
+
+    <div class="calendar-controls">
+        <div class="nav-group">
+            <button class="btn-nav" onclick="changeMonth(-1)" title="Poprzedni miesiąc">◀</button>
+
+            <select id="monthSelect" class="form-select-custom" style="width: 130px;" onchange="onDateSelectChange()">
+                <option value="1">Styczeń</option>
+                <option value="2">Luty</option>
+                <option value="3">Marzec</option>
+                <option value="4">Kwiecień</option>
+                <option value="5">Maj</option>
+                <option value="6">Czerwiec</option>
+                <option value="7">Lipiec</option>
+                <option value="8">Sierpień</option>
+                <option value="9">Wrzesień</option>
+                <option value="10">Październik</option>
+                <option value="11">Listopad</option>
+                <option value="12">Grudzień</option>
+            </select>
+
+            <select id="yearSelect" class="form-select-custom" style="width: 100px;" onchange="onDateSelectChange()">
+            </select>
+
+            <button class="btn-nav" onclick="changeMonth(1)" title="Następny miesiąc">▶</button>
+
+            <div style="width: 10px;"></div> <button class="btn-today" onclick="resetToToday()">Dzisiaj</button>
+        </div>
+
+        <div class="nav-group">
+            <span class="source-label">Źródło:</span>
+            <select id="calendarSelect" class="form-select-custom" style="min-width: 200px;" onchange="loadCalendarView()">
+                <option value="">Ładowanie...</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="calendar-wrapper">
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="spinner"></div>
+        </div>
+        <div id="calendarContainer">
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth() + 1;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+        generateYearOptions();
+        syncSelectors();
+        await loadCalendars();
+        loadCalendarView();
+
+        const container = document.getElementById('calendarContainer');
+        container.addEventListener('click', function(e) {
+            const link = e.target.closest('a');
+            if (link && link.href.includes('date=')) {
+                const urlParams = new URLSearchParams(link.search);
+                const dateStr = urlParams.get('date');
+
+                if (dateStr) {
+                    const selectedDate = new Date(dateStr);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    if (!isNaN(selectedDate.getTime())) {
+                        if (selectedDate < today) {
+                            const decision = confirm("Ten dzień już minął.\n\nCzy na pewno chcesz utworzyć wtedy spotkanie?");
+                            if (!decision) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    function generateYearOptions() {
+        const yearSelect = document.getElementById('yearSelect');
+        const baseYear = new Date().getFullYear();
+        yearSelect.innerHTML = '';
+        for (let y = baseYear - 5; y <= baseYear + 5; y++) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            yearSelect.appendChild(opt);
+        }
+    }
+
+    function changeMonth(offset) {
+        currentMonth += offset;
+        if (currentMonth > 12) { currentMonth = 1; currentYear++; }
+        else if (currentMonth < 1) { currentMonth = 12; currentYear--; }
+        syncSelectors();
+        loadCalendarView();
+    }
+
+    function onDateSelectChange() {
+        currentMonth = parseInt(document.getElementById('monthSelect').value);
+        currentYear = parseInt(document.getElementById('yearSelect').value);
+        loadCalendarView();
+    }
+
+    function resetToToday() {
+        const now = new Date();
+        currentYear = now.getFullYear();
+        currentMonth = now.getMonth() + 1;
+        syncSelectors();
+        loadCalendarView();
+    }
+
+    function syncSelectors() {
+        document.getElementById('monthSelect').value = currentMonth;
+        const yearSelect = document.getElementById('yearSelect');
+        if (!yearSelect.querySelector(`option[value="${currentYear}"]`)) {
+            const opt = document.createElement('option');
+            opt.value = currentYear;
+            opt.textContent = currentYear;
+            yearSelect.appendChild(opt);
+            const options = Array.from(yearSelect.options);
+            options.sort((a, b) => a.value - b.value);
+            yearSelect.innerHTML = '';
+            options.forEach(o => yearSelect.appendChild(o));
+        }
+        yearSelect.value = currentYear;
+    }
+
+    async function loadCalendars() {
+        try {
+            const resp = await fetch('/api/calendars');
+            const calendars = await resp.json();
+            const select = document.getElementById('calendarSelect');
+            select.innerHTML = '';
+            calendars.forEach(cal => {
+                const option = document.createElement('option');
+                option.value = cal.id;
+                option.textContent = cal.name + (cal.isDefault ? " (Główny)" : "");
+                if (cal.isDefault) option.selected = true;
+                select.appendChild(option);
+            });
+        } catch (e) { console.error(e); }
+    }
+
+    async function loadCalendarView() {
+        const container = document.getElementById('calendarContainer');
+        const overlay = document.getElementById('loadingOverlay');
+        const calendarId = document.getElementById('calendarSelect').value;
+
+        overlay.classList.add('active');
+
+        try {
+            const url = `/api/calendar-html?calendarId=${encodeURIComponent(calendarId)}&year=${currentYear}&month=${currentMonth}`;
+            const resp = await fetch(url);
+            const html = await resp.text();
+            container.innerHTML = html;
+        } catch (e) {
+            container.innerHTML = '<div class="alert alert-danger m-4">Błąd ładowania kalendarza.</div>';
+        } finally {
+            overlay.classList.remove('active');
+        }
+    }
+</script>

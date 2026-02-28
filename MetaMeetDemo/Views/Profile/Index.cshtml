@@ -1,0 +1,387 @@
+﻿@{
+    ViewData["Title"] = "Mój Profil";
+    var user = ViewBag.User as Microsoft.Graph.Models.User;
+
+    var name = user?.DisplayName ?? User.Identity.Name;
+    var email = user?.Mail ?? user?.UserPrincipalName ?? "brak danych";
+    var job = user?.JobTitle ?? "Użytkownik MetaMeet";
+    var licenseName = ViewBag.LicenseName ?? "Brak danych";
+    var licenseStatus = ViewBag.LicenseStatus ?? "Unknown";
+
+    var calCount = ViewBag.CalendarCount ?? 0;
+    var groupsCount = ViewBag.GroupsCount ?? 0;
+    var joinDate = ViewBag.JoinDate ?? "-";
+}
+
+<style>
+    :root {
+        --bg-color: #fcfcfc;
+        --text-main: #1f2937;
+        --text-muted: #6b7280;
+        --primary-purple: #6264A7;
+        --primary-hover: #4e5085;
+        --light-purple: #EEF0F8;
+        --border-color: #e5e7eb;
+        --status-success-bg: #dcfce7;
+        --status-success-text: #166534;
+        --status-warn-bg: #fef3c7;
+        --status-warn-text: #92400e;
+        --card-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        --card-radius: 6px;
+        --grad-header: linear-gradient(135deg, #6264A7 0%, #8B8DC8 100%);
+    }
+
+    body {
+        background-color: var(--bg-color);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .page-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 80vh;
+        padding: 20px;
+    }
+
+    .page-header {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .profile-card {
+        background: white;
+        width: 100%;
+        max-width: 500px;
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        text-align: center;
+        position: relative;
+        padding-bottom: 40px;
+        border: 1px solid transparent;
+    }
+
+    .card-header-bg {
+        height: 130px;
+        background: var(--grad-header);
+    }
+
+    .avatar-wrapper {
+        position: relative;
+        width: 130px;
+        height: 130px;
+        margin: -65px auto 0 auto;
+        z-index: 10;
+    }
+
+    .avatar-container {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 5px solid white;
+        background: #f3f4f6;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .avatar-initials {
+        font-size: 48px;
+        font-weight: 700;
+        color: var(--primary-purple);
+        text-transform: uppercase;
+    }
+
+    .avatar-edit-btn {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: var(--text-main);
+        color: white;
+        border: 3px solid white;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 18px;
+    }
+
+        .avatar-edit-btn:hover {
+            background: var(--primary-purple);
+            transform: scale(1.1);
+        }
+
+    .card-body {
+        padding: 15px 40px 10px 40px;
+    }
+
+    .name-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        margin-top: 15px;
+        margin-bottom: 5px;
+    }
+
+    h1 {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    .edit-name-icon {
+        color: var(--primary-purple);
+        cursor: pointer;
+        font-size: 18px;
+        padding: 6px;
+        border-radius: 50%;
+        transition: background 0.2s;
+        background: var(--light-purple);
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .edit-name-icon:hover {
+            background: #dbeafe;
+        }
+
+    .job-title {
+        font-size: 14px;
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 25px;
+    }
+
+    .license-box {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        margin: 0 auto 30px auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: fit-content;
+    }
+
+    .lic-success {
+        background: var(--status-success-bg);
+        color: var(--status-success-text);
+    }
+
+    .lic-warn {
+        background: var(--status-warn-bg);
+        color: var(--status-warn-text);
+    }
+
+    .stats-row {
+        display: flex;
+        justify-content: center;
+        gap: 0;
+        border-top: 1px solid #f3f4f6;
+        border-bottom: 1px solid #f3f4f6;
+        padding: 25px 0;
+        margin-bottom: 30px;
+    }
+
+    .stat-box {
+        text-align: center;
+        flex: 1;
+        border-right: 1px solid #f3f4f6;
+    }
+
+        .stat-box:last-child {
+            border-right: none;
+        }
+
+    .stat-num {
+        display: block;
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--text-main);
+        line-height: 1.2;
+    }
+
+    .stat-label {
+        font-size: 11px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
+    .email-section {
+        color: var(--primary-purple);
+        font-weight: 600;
+        font-size: 14px;
+        background: var(--light-purple);
+        padding: 10px 20px;
+        border-radius: 8px;
+        display: inline-block;
+    }
+</style>
+
+<div class="page-container">
+    <h2 class="page-header">Mój Profil</h2>
+
+    <div class="profile-card">
+        <div class="card-header-bg"></div>
+
+        <div class="avatar-wrapper">
+            <div class="avatar-container" id="bigAvatar">
+                <div class="spinner-border text-primary" role="status"></div>
+            </div>
+            <label for="photoInput" class="avatar-edit-btn" title="Zmień zdjęcie">
+                📷
+            </label>
+            <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="uploadPhoto()" />
+        </div>
+
+        <div class="card-body">
+            <div class="name-row">
+                <h1 id="displayNameText">@name</h1>
+                <span class="edit-name-icon" data-bs-toggle="modal" data-bs-target="#nameModal" title="Kliknij, aby edytować nazwę">
+                    ✎
+                </span>
+            </div>
+
+            <div class="job-title">@job</div>
+
+            <div>
+                <div class="license-box @(licenseStatus == "Enabled" ? "lic-success" : "lic-warn")">
+                    <span>@(licenseStatus == "Enabled" ? "✅" : "⚠️")</span>
+                    <span>@licenseName</span>
+                </div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-box">
+                    <span class="stat-num">@calCount</span>
+                    <span class="stat-label">Kalendarze</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-num">@groupsCount</span>
+                    <span class="stat-label">Grupy</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-num">@joinDate</span>
+                    <span class="stat-label">Dołączył/a</span>
+                </div>
+            </div>
+
+            <div class="email-section">📧 @email</div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="nameModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edytuj nazwę wyświetlaną</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="newNameInput" class="form-control" placeholder="Np. Jan Kowalski" value="@name">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="saveName()">Zapisz</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        loadAvatar();
+    });
+
+    async function loadAvatar() {
+        const container = document.getElementById('bigAvatar');
+        const userName = "@name";
+        try {
+            const resp = await fetch('/api/user-photo');
+            if (resp.ok) {
+                const blob = await resp.blob();
+                const url = URL.createObjectURL(blob);
+                container.innerHTML = `<img src="${url}" class="avatar-img" alt="Avatar">`;
+            } else throw new Error();
+        } catch (e) {
+            const parts = userName.trim().split(' ');
+            let initials = parts[0][0];
+            if (parts.length > 1) initials += parts[parts.length - 1][0];
+            container.innerHTML = `<span class="avatar-initials">${initials.toUpperCase()}</span>`;
+        }
+    }
+
+    async function uploadPhoto() {
+        const input = document.getElementById('photoInput');
+        if (!input.files || !input.files[0]) return;
+
+        const formData = new FormData();
+        formData.append("photo", input.files[0]);
+
+        document.getElementById('bigAvatar').innerHTML = '<div class="spinner-border text-primary" role="status"></div>';
+
+        try {
+            const resp = await fetch('/Profile/UploadPhoto', { method: 'POST', body: formData });
+            const result = await resp.json();
+            if (result.success) {
+                setTimeout(loadAvatar, 1500);
+            } else {
+                alert("Błąd: " + result.message);
+                loadAvatar();
+            }
+        } catch (e) {
+            alert("Błąd sieci.");
+            loadAvatar();
+        }
+    }
+
+    async function saveName() {
+        const newName = document.getElementById('newNameInput').value;
+        const modalEl = document.getElementById('nameModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+
+        if (!newName) return;
+
+        try {
+            const resp = await fetch('/Profile/UpdateDisplayName', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ newName: newName })
+            });
+            const result = await resp.json();
+            if (result.success) {
+                document.getElementById('displayNameText').innerText = newName;
+                modal.hide();
+            } else {
+                alert("Błąd: " + result.message);
+            }
+        } catch (e) { alert("Błąd sieci."); }
+    }
+</script>

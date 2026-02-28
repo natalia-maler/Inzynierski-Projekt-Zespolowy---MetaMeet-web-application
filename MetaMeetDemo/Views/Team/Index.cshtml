@@ -1,0 +1,489 @@
+﻿@{
+    ViewData["Title"] = "Mój Zespół";
+}
+
+<style>
+    /* --- ZMIENNE Z DASHBOARDU (UJEDNOLICONE) --- */
+    :root {
+        --bg-color: #fcfcfc;
+        --text-main: #1f2937;
+        --text-muted: #6b7280;
+        --primary-purple: #6264A7;
+        --primary-hover: #4e5085;
+        --light-purple: #EEF0F8;
+        --border-color: #e5e7eb;
+        --status-success-bg: #dcfce7;
+        --status-success-text: #166534;
+        --status-error-bg: #fee2e2;
+        --status-error-text: #991b1b;
+        --card-radius: 12px;
+        --card-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-main);
+    }
+
+    .team-container {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 0 20px;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .dashboard-card {
+        background: white;
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-fixed-height {
+        height: 400px;
+    }
+
+    .card-header-custom {
+        padding: 20px 25px;
+        border-bottom: 1px solid #f3f4f6;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        border-top-left-radius: var(--card-radius);
+        border-top-right-radius: var(--card-radius);
+    }
+
+        .card-header-custom h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+    .card-body-custom {
+        padding: 20px;
+        flex-grow: 1;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #d1d5db transparent;
+        border-bottom-left-radius: var(--card-radius);
+        border-bottom-right-radius: var(--card-radius);
+    }
+
+        .card-body-custom::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .card-body-custom::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .card-body-custom::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+
+    /* Input wyszukiwarki */
+    .search-input {
+        border-radius: 8px;
+        padding: 10px 15px;
+        border: 1px solid var(--border-color);
+        width: 100%;
+        background: #f9fafb;
+        color: var(--text-main);
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+
+        .search-input:focus {
+            border-color: var(--primary-purple);
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(98, 100, 167, 0.1);
+        }
+
+    /* Wyniki wyszukiwania */
+    .search-result-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        border-bottom: 1px solid #f3f4f6;
+        border-radius: 6px;
+        margin-bottom: 4px;
+    }
+
+        .search-result-item:hover {
+            background-color: var(--light-purple);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+    /* Przyciski */
+    .btn-action-sm {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-add {
+        background: var(--light-purple);
+        color: var(--primary-purple);
+    }
+
+        .btn-add:hover {
+            background: var(--primary-purple);
+            color: white;
+        }
+
+    .btn-refresh {
+        background: transparent;
+        color: var(--text-muted);
+        font-size: 12px;
+        border: 1px solid var(--border-color);
+        padding: 4px 12px;
+        border-radius: 6px;
+    }
+
+        .btn-refresh:hover {
+            border-color: var(--primary-purple);
+            color: var(--primary-purple);
+        }
+
+    /* --- POPRAWIONE KARTY ZNAJOMYCH (FIX NA ZNIKAJĄCE MENU) --- */
+    .friend-card {
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 15px;
+        background: white;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        /* Domyślna warstwa */
+        z-index: 1;
+        /* Animujemy tylko wygląd, z-index zmienia się natychmiast */
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+        /* 1. Zwykły hover - podnosimy kartę trochę (z-index 50) */
+        .friend-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(98, 100, 167, 0.15);
+            border-color: var(--primary-purple);
+            z-index: 50;
+        }
+
+        /* 2. SUPER WAŻNE: Karta z otwartym menu.
+           Musi mieć z-index DUŻO wyższy niż hover (50).
+           Używamy :has(.show) dla Bootstrapa i :focus-within dla pewności.
+           Dzięki temu karta z otwartym menu zawsze będzie NAD kartą najechaną myszką. */
+        .friend-card:has(.show),
+        .friend-card:focus-within {
+            z-index: 1000 !important;
+            border-color: var(--primary-purple); /* Opcjonalnie: utrzymaj fioletową ramkę */
+        }
+
+    .friend-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .friend-name {
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--text-main);
+        display: block;
+    }
+
+    .friend-email {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .more-options-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: 20px;
+        padding: 0 10px;
+        cursor: pointer;
+    }
+
+        .more-options-btn:hover {
+            color: var(--primary-purple);
+        }
+
+    .avatar-circle {
+        border-radius: 50%;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        text-transform: uppercase;
+        flex-shrink: 0;
+        box-shadow: 0 0 0 2px white, 0 0 0 3px var(--border-color);
+    }
+
+    .invite-card {
+        background: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: border-color 0.2s;
+    }
+
+        .invite-card:hover {
+            border-color: var(--primary-purple);
+        }
+
+    .btn-accept {
+        background: var(--status-success-bg);
+        color: var(--status-success-text);
+    }
+
+        .btn-accept:hover {
+            background: #bbf7d0;
+        }
+
+    .btn-reject {
+        background: var(--status-error-bg);
+        color: var(--status-error-text);
+    }
+
+        .btn-reject:hover {
+            background: #fecaca;
+        }
+
+    .dropdown-menu {
+        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        font-size: 13px;
+        z-index: 10001; /* Menu samo w sobie też wysoko */
+    }
+
+    .dropdown-item:active {
+        background-color: var(--primary-purple);
+        color: white;
+    }
+</style>
+
+<div class="team-container">
+    <div class="row g-4">
+        <div class="col-md-5 d-flex flex-column gap-4">
+
+            <div class="dashboard-card card-fixed-height">
+                <div class="card-header-custom">
+                    <h4>Znajdź osoby</h4>
+                </div>
+                <div class="card-body-custom">
+                    <div style="position:relative;">
+                        <input type="text" id="userSearchInput" class="search-input" placeholder="Wpisz imię lub email..." autocomplete="off">
+                    </div>
+
+                    <div id="searchResults" class="mt-3"></div>
+                    <div id="inviteStatus" class="mt-3" style="display:none;"></div>
+                </div>
+            </div>
+
+            <div class="dashboard-card card-fixed-height">
+                <div class="card-header-custom">
+                    <h4>Powiadomienia</h4>
+                </div>
+                <div class="card-body-custom" id="pendingInvitesList">
+                    <p class="text-muted text-center" style="font-size:13px; font-style:italic;">Brak nowych powiadomień.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-7">
+            <div class="dashboard-card" style="height: calc(400px + 400px + 1.5rem);">
+                <div class="card-header-custom">
+                    <h4>Twój Zespół</h4>
+                    <button class="btn-refresh" onclick="loadFriends()">Odśwież</button>
+                </div>
+                <div class="card-body-custom">
+                    <div id="friendsList" class="row g-3">
+                        <div class="text-center p-5 text-muted" style="width:100%;">Ładowanie znajomych...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="currentUserId" />
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const userResp = await fetch('/api/current-user-basic');
+        if (userResp.ok) {
+            const user = await userResp.json();
+            document.getElementById('currentUserId').value = user.id;
+            loadFriends(user.id);
+            loadPendingInvites(user.id);
+        }
+        document.getElementById('userSearchInput').addEventListener('input', handleSearch);
+    });
+
+    function getAvatarHtml(name, size = 45, fontSize = 18) {
+        if (!name) return `<div class="avatar-circle" style="background:#ccc; width:${size}px; height:${size}px; font-size:${fontSize}px;">?</div>`;
+        const parts = name.trim().split(' ');
+        let initials = parts[0][0];
+        if (parts.length > 1) initials += parts[parts.length - 1][0];
+        initials = initials.toUpperCase();
+        let hash = 0; for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+        const color = "#" + "00000".substring(0, 6 - c.length) + c;
+        return `<div class="avatar-circle" style="background-color: ${color}; width:${size}px; height:${size}px; font-size:${fontSize}px;">${initials}</div>`;
+    }
+
+    async function loadFriends(myId) {
+        if(!myId) myId = document.getElementById('currentUserId').value;
+        const container = document.getElementById('friendsList');
+        try {
+            const resp = await fetch(`/api/friends/${myId}`);
+            const friends = await resp.json();
+            if(friends.length === 0) {
+                container.innerHTML = '<div class="col-12 text-center text-muted py-5" style="font-size:14px;">Nie masz jeszcze nikogo w zespole.</div>';
+                return;
+            }
+            container.innerHTML = friends.map(f => {
+                const initialsHtml = getAvatarHtml(f.displayName, 45, 16);
+                const photoUrl = `/api/users/${f.azureAdUserId}/photo`;
+                return `
+                <div class="col-12">
+                    <div class="friend-card">
+                        <div class="friend-info">
+                            <div style="position: relative; width: 45px; height: 45px;">
+                                <img src="${photoUrl}" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; position: absolute; top: 0; left: 0;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                                <div style="display: none; width: 100%; height: 100%;">${initialsHtml}</div>
+                            </div>
+                            <div>
+                                <span class="friend-name">${escapeHtml(f.displayName)}</span>
+                                <span class="friend-email">${escapeHtml(f.userPrincipalName)}</span>
+                            </div>
+                        </div>
+                        <div class="dropup">
+                            <button class="more-options-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">⋮</button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="/Schedule?withUser=${encodeURIComponent(f.userPrincipalName)}">Umów spotkanie</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" onclick="removeFriend(${f.id}, '${escapeHtml(f.displayName)}')">Usuń z zespołu</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        } catch(e) { console.error(e); }
+    }
+
+     async function loadPendingInvites(myId) {
+        const container = document.getElementById('pendingInvitesList');
+        try {
+            const resp = await fetch(`/api/notifications/${myId}`);
+            const notifs = await resp.json();
+            const activeNotifs = notifs.filter(n => !n.isHandled && !n.isRead);
+
+            if (activeNotifs.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center small" style="font-style:italic;">Brak nowych powiadomień.</p>';
+                return;
+            }
+
+            container.innerHTML = activeNotifs.map(n => {
+                const photoUrl = n.senderAzureId ? `/api/users/${n.senderAzureId}/photo` : '';
+                const initialsHtml = getAvatarHtml(n.senderName || "?", 32, 12);
+                let actionButtons = '';
+                if (n.type === 'FriendRequest') {
+                    actionButtons = `
+                        <button class="btn-action-sm btn-accept" onclick="respond(${n.id}, true)" title="Akceptuj">✓</button>
+                        <button class="btn-action-sm btn-reject" onclick="respond(${n.id}, false)" title="Odrzuć">✕</button>
+                    `;
+                } else {
+                    actionButtons = `
+                        <button class="btn-action-sm btn-refresh" onclick="markAsRead(${n.id})" style="font-size:11px;" title="Oznacz jako przeczytane">OK</button>
+                    `;
+                }
+
+                return `
+                <div class="invite-card">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div style="position: relative; width: 32px; height: 32px; flex-shrink:0;">
+                            <img src="${photoUrl}"
+                                 style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; position: absolute; top: 0; left: 0;"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                 alt="" />
+                            <div style="display: none; width: 100%; height: 100%;">
+                                ${initialsHtml}
+                            </div>
+                        </div>
+                        <div style="font-size:13px; line-height:1.2;">
+                            <strong>${escapeHtml(n.senderName)}</strong><br>
+                            <span class="text-muted" style="font-size:11px;">${escapeHtml(n.message)}</span>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:5px;">
+                        ${actionButtons}
+                    </div>
+                </div>`;
+            }).join('');
+        } catch (e) { console.error(e); }
+    }
+
+    async function respond(id, accept) {
+          await fetch(`/api/notifications/respond?notificationId=${id}&accept=${accept}`, { method: 'POST' });
+          const myId = document.getElementById('currentUserId').value;
+          loadPendingInvites(myId);
+          if(accept) loadFriends(myId);
+      }
+
+    async function markAsRead(id) {
+        await fetch(`/api/notifications/mark-read?notificationId=${id}`, { method: 'POST' });
+        const myId = document.getElementById('currentUserId').value;
+        loadPendingInvites(myId);
+    }
+    async function removeFriend(friendId, friendName) { if (!confirm(`Czy na pewno usunąć ${friendName}?`)) return; const myId = document.getElementById('currentUserId').value; await fetch(`/api/friends/remove?userId=${myId}&friendId=${friendId}`, { method: 'POST' }); loadFriends(myId); }
+    let searchTimeout;
+    async function handleSearch(e) {
+        const query = e.target.value.trim(); const resultsContainer = document.getElementById('searchResults'); const myId = document.getElementById('currentUserId').value;
+        if (query.length < 2) { resultsContainer.innerHTML = ''; return; }
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(async () => {
+            try {
+                resultsContainer.innerHTML = '<div class="p-2 text-center text-muted small">Szukam...</div>';
+                const resp = await fetch(`/api/users/search?query=${encodeURIComponent(query)}&currentUserId=${myId}`);
+                const users = await resp.json();
+                if (users.length === 0) { resultsContainer.innerHTML = '<div class="p-2 text-center text-muted small">Nie znaleziono.</div>'; return; }
+                resultsContainer.innerHTML = users.map(u => {
+                    const initialsHtml = getAvatarHtml(u.displayName, 32, 11);
+                    const photoUrl = `/api/users/${u.azureAdUserId}/photo`;
+                    return `<div class="search-result-item"><div style="display:flex; align-items:center; gap:10px;"><div style="position: relative; width: 32px; height: 32px;"><img src="${photoUrl}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; position: absolute;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" /><div style="display: none; width: 100%; height: 100%;">${initialsHtml}</div></div><div><div style="font-size:13px; font-weight:700;">${escapeHtml(u.displayName)}</div><div style="font-size:11px; color:#6b7280;">${escapeHtml(u.userPrincipalName)}</div></div></div><button class="btn-action-sm btn-add" onclick="sendInvite(${u.id}, '${escapeHtml(u.displayName)}')">➕</button></div>`;
+                }).join('');
+            } catch (err) { console.error(err); }
+        }, 300);
+    }
+    async function sendInvite(targetId, targetName) { const myId = document.getElementById('currentUserId').value; const status = document.getElementById('inviteStatus'); if (!confirm(`Wysłać zaproszenie do ${targetName}?`)) return; status.style.display = 'block'; status.innerHTML = 'Wysyłanie...'; status.className = 'alert alert-info py-2 px-3 small'; try { const resp = await fetch(`/api/friends/request?senderId=${myId}&recipientId=${targetId}`, { method: 'POST' }); const data = await resp.json(); if(data.success) { status.className = 'alert alert-success py-2 px-3 small'; status.innerHTML = `Wysłano!`; document.getElementById('userSearchInput').value = ''; document.getElementById('searchResults').innerHTML = ''; setTimeout(() => { status.style.display = 'none'; }, 2000); } else { status.className = 'alert alert-danger py-2 px-3 small'; status.innerHTML = data.error; } } catch(e) { status.innerHTML = 'Błąd sieci'; } }
+    function escapeHtml(text) { if (!text) return ""; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+</script>

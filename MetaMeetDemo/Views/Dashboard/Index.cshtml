@@ -1,0 +1,550 @@
+﻿@model MetaMeetDemo.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Pulpit";
+    ViewData["IsFullWidth"] = true;
+}
+
+<style>
+    :root {
+        --bg-color: #fcfcfc;
+        --text-main: #1f2937;
+        --text-muted: #6b7280;
+        --primary-purple: #6264A7;
+        --primary-hover: #4e5085;
+        --light-purple: #EEF0F8;
+        --border-color: #e5e7eb;
+        --status-success-bg: #dcfce7;
+        --status-success-text: #166534;
+        --status-error-bg: #fee2e2;
+        --status-error-text: #991b1b;
+        --status-warn-bg: #fef3c7;
+        --status-warn-text: #92400e;
+        --grad-1: linear-gradient(135deg, #6264A7 0%, #8B8DC8 100%);
+        --grad-2: linear-gradient(135deg, #5856D6 0%, #7C7AE6 100%);
+        --grad-3: linear-gradient(135deg, #8E44AD 0%, #A569BD 100%);
+    }
+
+    .dashboard-wrapper {
+        display: flex;
+        height: calc(100vh - 60px - 60px);
+        width: 100%;
+        overflow: hidden;
+        background-color: var(--bg-color);
+        border-radius: 6px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    .left-panel {
+        flex: 1;
+        padding: 30px 50px;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .top-section {
+        flex-shrink: 0;
+        margin-bottom: 20px;
+    }
+
+    .focus-control {
+        display: flex;
+        align-items: flex-start;
+        gap: 30px;
+        flex: 1;
+        overflow: hidden;
+        min-height: 0;
+        margin-bottom: 15px;
+    }
+
+    .date-display {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 70px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 0;
+    }
+
+    .agenda-list {
+        flex: 1;
+        height: 100%;
+        overflow-y: auto;
+        border-left: 2px solid var(--border-color);
+        padding-left: 30px;
+        scrollbar-width: thin;
+        scrollbar-color: #d1d5db transparent;
+    }
+
+    .bottom-actions {
+        flex-shrink: 0;
+        display: flex;
+        gap: 15px;
+        border-top: 1px solid #f3f4f6;
+        padding-top: 15px;
+    }
+
+    .action-card {
+        flex: 1;
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 12px;
+        text-align: center;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        color: var(--text-main);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(98, 100, 167, 0.15);
+            border-color: var(--primary-purple);
+            color: var(--primary-purple);
+        }
+
+    .ac-icon {
+        font-size: 20px;
+        margin-bottom: 5px;
+    }
+
+    .ac-title {
+        font-weight: 700;
+        font-size: 13px;
+        margin-bottom: 2px;
+    }
+
+    .ac-desc {
+        font-size: 10px;
+        color: var(--text-muted);
+    }
+
+
+    .right-panel {
+        width: 400px;
+        min-width: 350px;
+        background-color: white;
+        border-left: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+    }
+
+    header h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: var(--text-main);
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+    }
+
+        header h1 span {
+            color: var(--primary-purple);
+            font-size: 0.8em;
+        }
+
+    h2.subtitle {
+        font-size: 16px;
+        font-weight: 500;
+        color: #9ca3af;
+        margin: 0;
+    }
+
+    .date-day-name {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+    }
+
+    .date-number {
+        font-size: 36px;
+        font-weight: 300;
+        line-height: 1;
+        margin: 5px 0;
+        color: var(--text-main);
+    }
+
+    .date-month {
+        font-size: 13px;
+        color: var(--text-muted);
+    }
+
+    .agenda-item {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        color: var(--text-main);
+    }
+
+        .agenda-item.past {
+            opacity: 0.5;
+        }
+
+    .agenda-dot {
+        width: 10px;
+        height: 10px;
+        background-color: var(--primary-purple);
+        border-radius: 50%;
+        margin-right: 15px;
+        box-shadow: 0 0 0 4px var(--light-purple);
+        flex-shrink: 0;
+    }
+
+    .agenda-item.past .agenda-dot {
+        background-color: #d1d5db;
+        box-shadow: none;
+    }
+
+    .agenda-time {
+        font-weight: 600;
+        color: var(--text-muted);
+        width: 90px;
+        flex-shrink: 0;
+        font-size: 12px;
+    }
+
+    .join-btn {
+        background: var(--primary-purple);
+        color: white;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 600;
+        margin-left: 10px;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+
+        .join-btn:hover {
+            background: var(--primary-hover);
+        }
+
+    .calendar-header {
+        padding: 15px 25px;
+        font-weight: 600;
+        border-bottom: 1px solid #f3f4f6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .nav-btn-cal {
+        text-decoration: none;
+        color: var(--text-main);
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #f3f4f6;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .nav-btn-cal:hover {
+            background: #e5e7eb;
+            color: var(--primary-purple);
+        }
+
+        .nav-btn-cal.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+    .calendar-scroll-area {
+        flex-grow: 1;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .timeline-container {
+        position: relative;
+        height: 2500px;
+        width: 100%;
+        padding-top: 20px;
+    }
+
+    .grid-line {
+        position: absolute;
+        width: 100%;
+        border-top: 1px solid #f3f4f6;
+        height: 1px;
+        left: 0;
+    }
+
+    .grid-time {
+        position: absolute;
+        left: 15px;
+        font-size: 10px;
+        color: var(--text-muted);
+        transform: translateY(-50%);
+        background: white;
+        padding-right: 5px;
+        z-index: 1;
+    }
+
+    .event-card {
+        position: absolute;
+        left: 60px;
+        right: 10px;
+        border-radius: 6px;
+        padding: 3px 6px;
+        font-size: 11px;
+        overflow: hidden;
+        border-left: 4px solid rgba(0,0,0,0.15);
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .past-event {
+        background: #e5e7eb;
+        border-left-color: #9ca3af;
+        color: #4b5563;
+    }
+
+    .active-event {
+        color: white;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+
+    .purple-v1 {
+        background: var(--grad-1);
+    }
+
+    .purple-v2 {
+        background: var(--grad-2);
+    }
+
+    .purple-v3 {
+        background: var(--grad-3);
+    }
+
+    .evt-subject {
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .current-time-line {
+        position: absolute;
+        width: 100%;
+        border-top: 2px solid #ea4335;
+        z-index: 50;
+        pointer-events: none;
+        display: none;
+    }
+
+    .time-dot {
+        position: absolute;
+        left: 0;
+        top: -6px;
+        width: 12px;
+        height: 12px;
+        background: #ea4335;
+        border-radius: 50%;
+        box-shadow: 0 0 0 2px white;
+    }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class='left-panel'>
+
+        <div class="top-section">
+            <header>
+                <h1>Witaj, <span>@Model.UserName!</span></h1>
+                <h2 class='subtitle'>@Model.WelcomeMessage</h2>
+            </header>
+
+        </div>
+
+        <div class='focus-control'>
+            <div class='date-display'>
+                <div class='date-day-name'>@Model.TodayDayName</div>
+                <div class='date-number'>@Model.TodayDayNumber</div>
+                <div class='date-month'>@Model.TodayMonthName</div>
+            </div>
+
+            <div class='agenda-list'>
+                @if (!Model.TodayEvents.Any())
+                {
+                    <div class='agenda-item' style='color:#ccc; font-style:italic;'>Brak zaplanowanych spotkań na dzisiaj.</div>
+                }
+                @foreach (var evt in Model.TodayEvents)
+                {
+                    var itemClass = evt.IsPast ? "agenda-item past" : "agenda-item";
+                    <div class='@itemClass'>
+                        <div class='agenda-dot'></div>
+                        <div class='agenda-time'>@evt.Start.ToString("HH:mm") - @evt.End.ToString("HH:mm")</div>
+                        <div class='agenda-subject'>
+                            @{
+                                var fullText = evt.Subject ?? "";
+                                var displayText = fullText.Length > 45 ? fullText.Substring(0, 45) + "..." : fullText;
+
+                                bool isCancelled = displayText.StartsWith("Anulowano:", StringComparison.OrdinalIgnoreCase) ||
+                                displayText.StartsWith("Canceled:", StringComparison.OrdinalIgnoreCase);
+
+                                bool isRejected = displayText.StartsWith("Odrzucono:", StringComparison.OrdinalIgnoreCase) ||
+                                displayText.StartsWith("Declined:", StringComparison.OrdinalIgnoreCase);
+
+                                if (isCancelled)
+                                {
+                                    <span style="color: var(--status-error-text); font-weight: 800;">Anulowano:</span>
+                                    @displayText.Substring(displayText.IndexOf(':') + 1)
+                                }
+                                else if (isRejected)
+                                {
+                                    <span style="color: var(--status-warn-text); font-weight: 800;">Odrzucono:</span>
+                                    @displayText.Substring(displayText.IndexOf(':') + 1)
+                                }
+                                else
+                                {
+                                    @displayText
+                                }
+                            }
+
+                            @* 4. PRZYCISK DOŁĄCZ - Pokazujemy TYLKO jeśli NIE jest anulowane i NIE odrzucone *@
+                            @if (!string.IsNullOrEmpty(evt.JoinUrl) && !isCancelled && !isRejected)
+                            {
+                                <a href='@evt.JoinUrl' target='_blank' class='join-btn'>Dołącz</a>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="bottom-actions">
+            <a href="/Meetings" class="action-card">
+                <div class="ac-title">Moje Spotkania</div>
+                <div class="ac-desc">Historia i plan</div>
+            </a>
+            <a href="/Team" class="action-card">
+                <div class="ac-title">Mój Zespół</div>
+                <div class="ac-desc">Zarządzaj ludźmi</div>
+            </a>
+            <a href="/Schedule" class="action-card">
+                <div class="ac-title">Nowe Spotkanie</div>
+                <div class="ac-desc">Umów w Teams</div>
+            </a>
+        </div>
+
+    </div>
+
+    <div class='right-panel'>
+        <div class='calendar-header'>
+            <span>Kalendarz</span>
+            <div class='cal-nav'>
+                @if (Model.IsToday)
+                {
+                    <span class='nav-btn-cal disabled'>&#10094;</span>
+                }
+                else
+                {
+                    <a href='@Url.Action("Index", new { date = Model.PrevDateStr })' class='nav-btn-cal'>&#10094;</a>
+                }
+                <span class="cal-date-display">@Model.SelectedDate.ToString("dd.MM.yyyy")</span>
+                <a href='@Url.Action("Index", new { date = Model.NextDateStr })' class='nav-btn-cal'>&#10095;</a>
+            </div>
+        </div>
+        <div class='calendar-scroll-area' id='scrollContainer'>
+            <div class='timeline-container'>
+                @if (Model.IsToday)
+                {
+                    <div id="currentTimeLine" class="current-time-line"><div class="time-dot"></div></div>
+                }
+                @for (int i = 0; i <= 24; i++)
+                {
+                    var topPos = (i * 100) + 20;
+                    var timeLabel = (i == 24) ? "" : $"{i}:00";
+                    <div class='grid-line' style="@($"top: {topPos}px;")"><span class='grid-time'>@timeLabel</span></div>
+                }
+                @{
+                    int colorIdx = 0;
+                }
+                @foreach (var evt in Model.CalendarEvents)
+                {
+                    string classList;
+                    if (evt.IsPast) { classList = "past-event"; }
+                    else
+                    {
+                        var variant = "purple-v" + ((colorIdx++ % 3) + 1);
+                        classList = $"active-event {variant}";
+                    }
+                    var totalCols = evt.TotalColumns > 0 ? evt.TotalColumns : 1;
+                    var colIdx = evt.ColumnIndex;
+
+                    <div class='event-card @classList'
+                         style='top: @(evt.TopPosition)px;
+                                height: calc(@(evt.VisualHeight)px - 2px);
+                                left: calc(60px + ((100% - 70px) * @colIdx / @totalCols));
+                                width: calc(((100% - 70px) / @totalCols) - 4px);
+                                z-index: 10;'>
+                        <div class='evt-subject'>@evt.Subject</div>
+                        @if (totalCols < 3)
+                        {
+                            <div class='evt-time'>@evt.Start.ToString("HH:mm") - @evt.End.ToString("HH:mm")</div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        updateTimeLine();
+        scrollToView();
+        setInterval(updateTimeLine, 60000);
+
+        scrollAgendaToCurrent();
+    });
+
+    function scrollAgendaToCurrent() {
+        var listContainer = document.querySelector('.agenda-list');
+        if (!listContainer) return;
+        var items = listContainer.querySelectorAll('.agenda-item');
+        var firstActiveItem = null;
+        for (var i = 0; i < items.length; i++) {
+            if (!items[i].classList.contains('past')) { firstActiveItem = items[i]; break; }
+        }
+        if (firstActiveItem) { firstActiveItem.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+        else { listContainer.scrollTop = listContainer.scrollHeight; }
+    }
+
+    function scrollToView() {
+        var container = document.getElementById('scrollContainer');
+        if (!container) return;
+        var line = document.getElementById('currentTimeLine');
+        if (line) {
+            var now = new Date();
+            var topPos = (now.getHours() * 100) + (now.getMinutes() * (100 / 60)) + 20;
+            var centerPos = topPos - (container.clientHeight / 2 );
+            container.scrollTo({ top: centerPos, behavior: 'smooth' });
+        } else { container.scrollTop = 820; }
+    }
+
+    function updateTimeLine() {
+        var line = document.getElementById('currentTimeLine');
+        if (!line) return;
+        var now = new Date();
+        var topPos = (now.getHours() * 100) + (now.getMinutes() * (100 / 60)) + 20;
+        line.style.top = topPos + 'px';
+        line.style.display = 'block';
+    }
+</script>

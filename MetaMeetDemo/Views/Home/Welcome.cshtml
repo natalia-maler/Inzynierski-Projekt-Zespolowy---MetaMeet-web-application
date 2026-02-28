@@ -1,0 +1,329 @@
+﻿@{
+    ViewData["Title"] = "Witaj w MetaMeet";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Witaj - MetaMeet Demo</title>
+    <style>
+        :root {
+            --bg-color: #fcfcfc;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --primary-purple: #6264A7;
+            --primary-hover: #4e5085;
+            --light-purple: #EEF0F8;
+            --border-color: #e5e7eb;
+            --input-bg: #f9fafb;
+            --status-success-bg: #dcfce7;
+            --status-success-text: #166534;
+            --status-error-bg: #fee2e2;
+            --status-error-text: #991b1b;
+            --card-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            --card-radius: 8px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-purple);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .welcome-card {
+            background: white;
+            padding: 40px;
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            border: 1px solid white;
+        }
+
+        h1 {
+            color: var(--text-main);
+            margin-bottom: 10px;
+            font-weight: 800;
+            font-size: 28px;
+        }
+
+        p {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+
+            input:focus {
+                outline: none;
+                background-color: white;
+                border-color: var(--primary-purple);
+                box-shadow: 0 0 0 3px rgba(98, 100, 167, 0.1);
+            }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+            box-sizing: border-box;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+            .btn:hover {
+                transform: translateY(-2px);
+            }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6264A7 0%, #8B8DC8 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(98, 100, 167, 0.2);
+        }
+
+            .btn-primary:hover {
+                box-shadow: 0 6px 16px rgba(98, 100, 167, 0.3);
+            }
+
+        .btn-microsoft {
+            background: #2f2f2f;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+            .btn-microsoft:hover {
+                background: #1a1a1a;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+
+        .divider {
+            margin: 25px 0;
+            position: relative;
+            border-top: 1px solid var(--border-color);
+        }
+
+            .divider span {
+                position: absolute;
+                top: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: white;
+                padding: 0 10px;
+                color: var(--text-muted);
+                font-size: 11px;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+            }
+
+        #statusMessage {
+            margin-top: 20px;
+            font-size: 13px;
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .success {
+            background: var(--status-success-bg);
+            color: var(--status-success-text);
+        }
+
+        .error {
+            background: var(--status-error-bg);
+            color: var(--status-error-text);
+        }
+
+        #successScreen {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .success-box {
+            background-color: #f0fdf4;
+            border: 2px dashed #166534;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .new-email {
+            font-size: 18px;
+            font-weight: bold;
+            color: #166534;
+            margin: 10px 0;
+            font-family: monospace;
+            background: white;
+            padding: 5px;
+            border-radius: 4px;
+            user-select: all;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="welcome-card">
+        <h1 style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <img src="/img/1000019468.svg" alt="Logo" style="width: 36px; height: 36px; object-fit: contain;">
+            MetaMeet
+        </h1>
+
+        <p>Zaloguj się lub utwórz nowe konto</p>
+
+        <div id="registrationFormWrapper">
+            <a href="/MicrosoftIdentity/Account/SignIn" class="btn btn-microsoft">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 23 23"><path fill="#f35325" d="M1 1h10v10H1z" /><path fill="#81bc06" d="M12 1h10v10H12z" /><path fill="#05a6f0" d="M1 12h10v10H1z" /><path fill="#ffba08" d="M12 12h10v10H12z" /></svg>
+                Zaloguj przez Microsoft
+            </a>
+
+            <div class="divider"><span>LUB ZAREJESTRUJ SIĘ</span></div>
+
+            <div class="input-group">
+                <label>Wyświetlana nazwa</label>
+                <input type="text" id="regName" placeholder="Np. Jan Kowalski" autocomplete="off" />
+            </div>
+            <div class="input-group">
+                <label>Prefix Emaila</label>
+                <input type="text" id="regEmail" placeholder="Np. jan.kowalski" autocomplete="off" />
+            </div>
+            <div class="input-group">
+                <label>Hasło</label>
+                <input type="password" id="regPass" placeholder="Hasło..." />
+            </div>
+
+            <button class="btn btn-primary" onclick="registerUser()">Utwórz konto</button>
+
+            <div id="statusMessage"></div>
+        </div>
+
+        <div id="successScreen">
+            <div class="success-box">
+                <div style="color: #166534; margin-bottom: 5px;">✅ Konto utworzone pomyślnie!</div>
+                <div style="font-size: 13px; color: #444;">Twój login to:</div>
+
+                <div class="new-email" id="createdEmailDisplay"></div>
+
+                <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                    Zapisz ten adres, będzie potrzebny do logowania!
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="confirmAndGoToLogin()">Przejdź do logowania</button>
+        </div>
+
+    </div>
+
+    <script>
+        async function registerUser() {
+            const displayName = document.getElementById('regName').value;
+            const emailPrefix = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPass').value;
+            const statusDiv = document.getElementById('statusMessage');
+
+            if (!displayName || !emailPrefix || !password) {
+                showStatus('Wypełnij wszystkie pola!', 'error');
+                return;
+            }
+
+            statusDiv.style.display = 'block';
+            statusDiv.className = '';
+            statusDiv.style.background = '#f3f4f6';
+            statusDiv.style.color = '#333';
+            statusDiv.textContent = 'Tworzenie konta...';
+
+            try {
+                const url = `/api/users/create?displayName=${encodeURIComponent(displayName)}&emailPrefix=${encodeURIComponent(emailPrefix)}&password=${encodeURIComponent(password)}`;
+
+                const response = await fetch(url, { method: 'POST' });
+                const result = await response.json();
+
+                if (result.success) {
+                    showSuccessScreen(result.userPrincipalName);
+                } else {
+                    showStatus('Błąd: ' + result.error, 'error');
+                }
+            } catch (err) {
+                showStatus('Błąd połączenia z serwerem.', 'error');
+                console.error(err);
+            }
+        }
+
+        function showStatus(msg, type) {
+            const el = document.getElementById('statusMessage');
+            el.textContent = msg;
+            el.className = type;
+            el.style.display = 'block';
+            el.style.background = '';
+            el.style.color = '';
+        }
+
+        function showSuccessScreen(email) {
+            document.getElementById('registrationFormWrapper').style.display = 'none';
+
+            document.getElementById('createdEmailDisplay').textContent = email;
+
+            document.getElementById('successScreen').style.display = 'block';
+        }
+
+        function confirmAndGoToLogin() {
+            const confirmed = confirm("Czy na pewno zapisałeś lub zapamiętałeś swój login?\n\n" + document.getElementById('createdEmailDisplay').textContent + "\n\nBez niego nie będziesz mógł się zalogować.");
+
+            if (confirmed) {
+                window.location.href = "/MicrosoftIdentity/Account/SignIn";
+            }
+        }
+    </script>
+</body>
+</html>

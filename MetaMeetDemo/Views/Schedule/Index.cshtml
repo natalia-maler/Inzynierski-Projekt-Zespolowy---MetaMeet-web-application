@@ -1,0 +1,548 @@
+﻿@{
+    ViewData["Title"] = "Umów Spotkanie";
+}
+
+<style>
+    :root {
+        --text-main: #1f2937;
+        --text-muted: #6b7280;
+        --primary-purple: #6264A7;
+        --primary-hover: #4e5085;
+        --light-purple: #EEF0F8;
+        --card-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        --card-radius: 6px;
+        --input-border: #e5e7eb;
+        --bg-input: #f9fafb;
+    }
+
+    body {
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .schedule-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .schedule-card {
+        background: white;
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
+        border: none;
+        overflow: hidden;
+        margin-top: 20px;
+    }
+
+    .card-header-custom {
+        padding: 25px 30px;
+        border-bottom: 1px solid #f3f4f6;
+        background: white;
+    }
+
+        .card-header-custom h3 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+    .header-logo {
+        width: 32px;
+        height: 32px;
+        object-fit: contain;
+    }
+
+    .card-header-custom p {
+        margin: 8px 0 0 44px;
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+
+    .card-body-custom {
+        padding: 30px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid var(--input-border);
+        padding: 10px 15px;
+        background-color: var(--bg-input);
+        color: var(--text-main);
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+
+        .form-control:focus, .form-select:focus {
+            background-color: white;
+            border-color: var(--primary-purple);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(98, 100, 167, 0.1);
+        }
+
+    .attendee-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        min-height: 48px;
+        padding: 8px;
+        border: 1px solid var(--input-border);
+        border-radius: 8px;
+        background: var(--bg-input);
+        cursor: pointer;
+    }
+
+    .attendee-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        background: var(--light-purple);
+        color: var(--primary-purple);
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .attendee-tag-remove {
+        cursor: pointer;
+        font-weight: bold;
+        padding: 0 4px;
+        border-radius: 50%;
+    }
+
+    .attendee-dropdown {
+        position: absolute;
+        z-index: 1000;
+        background: white;
+        border: 1px solid var(--input-border);
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        max-height: 300px;
+        overflow-y: auto;
+        width: 100%;
+        display: none;
+        margin-top: 5px;
+    }
+
+        .attendee-dropdown.show {
+            display: block;
+        }
+
+    .attendee-search {
+        padding: 10px;
+        border-bottom: 1px solid var(--input-border);
+        position: sticky;
+        top: 0;
+        background: white;
+    }
+
+        .attendee-search input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            outline: none;
+        }
+
+    .attendee-option {
+        padding: 10px 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: var(--text-main);
+    }
+
+        .attendee-option:hover {
+            background: #f9fafb;
+        }
+
+        .attendee-option.selected {
+            background: var(--light-purple);
+            color: var(--primary-purple);
+            font-weight: 600;
+        }
+
+    #availabilitySection {
+        background-color: #f9fafb;
+        border: 1px solid var(--input-border);
+        border-radius: 8px;
+        padding: 15px;
+    }
+
+    #submitBtn {
+        background: linear-gradient(135deg, #6264A7 0%, #8B8DC8 100%);
+        border: none;
+        font-weight: 600;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 16px;
+        color: white;
+        width: 100%;
+        transition: transform 0.2s;
+    }
+
+        #submitBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(98, 100, 167, 0.3);
+        }
+
+        #submitBtn:disabled {
+            background: #ccc;
+            transform: none;
+            box-shadow: none;
+        }
+
+    .btn-outline-success {
+        color: #166534;
+        border-color: #dcfce7;
+        background-color: #dcfce7;
+        font-weight: 600;
+        border: none;
+    }
+
+        .btn-outline-success:hover {
+            background-color: #bbf7d0;
+            color: #14532d;
+        }
+</style>
+
+<div class="schedule-container">
+    <div class="card schedule-card">
+        <div class="card-header-custom">
+            <h3>
+                <img src="/img/1000019468.svg" class="header-logo" alt="Logo" />
+                Umów nowe spotkanie
+            </h3>
+            <p>Wybierz uczestników, sprawdź dostępność i wyślij zaproszenie Teams.</p>
+        </div>
+
+        <div class="card-body-custom">
+            <form id="meetingForm" onsubmit="createMeeting(event)">
+
+                <div class="mb-4 position-relative">
+                    <label class="form-label">Z kim? <span class="text-muted fw-normal" style="font-size:12px;">(wybierz osoby z zespołu)</span></label>
+                    <div id="attendeeTags" class="attendee-tags" onclick="toggleDropdown()">
+                        <span class="text-muted small" id="placeholderText" style="padding: 4px;">Kliknij, aby dodać uczestników...</span>
+                    </div>
+                    <div id="attendeeDropdown" class="attendee-dropdown">
+                        <div class="attendee-search">
+                            <input type="text" id="attendeeSearch" placeholder="🔍 Szukaj..." onkeyup="filterAttendees()" autocomplete="off">
+                        </div>
+                        <div id="attendeeOptions"></div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Temat spotkania</label>
+                        <input type="text" id="meetingSubject" class="form-control" placeholder="np. Sprint Review" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Czas trwania</label>
+                        <select id="meetingDuration" class="form-select" onchange="checkAvailability()">
+                            <option value="15">15 minut</option>
+                            <option value="30" selected>30 minut</option>
+                            <option value="45">45 minut</option>
+                            <option value="60">1 godzina</option>
+                            <option value="90">1.5 godziny</option>
+                            <option value="120">2 godziny</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Data</label>
+                        <input type="date" id="meetingDate" class="form-control" required onchange="checkAvailability()">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Godzina rozpoczęcia</label>
+                        <input type="time" id="meetingTime" class="form-control" required>
+                    </div>
+                </div>
+
+                <div id="availabilitySection" class="d-none mb-4">
+                    <h6 class="fw-bold mb-3" style="font-size:14px; color:var(--text-main);">Sugerowane wolne terminy:</h6>
+                    <div id="slotsContainer" class="d-flex flex-wrap gap-2">
+                        <span class="text-muted small"><span class="spinner-border spinner-border-sm me-2"></span>Analizuję kalendarze...</span>
+                    </div>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" id="submitBtn">
+                        Wyślij zaproszenie Teams
+                    </button>
+                </div>
+
+                <div id="resultMessage" class="mt-4 d-none"></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="currentUserId" />
+<input type="hidden" id="currentUserUpn" />
+
+<script>
+    let allFriends = [];
+    let selectedAttendees = [];
+
+    document.addEventListener("DOMContentLoaded", async () => {
+        const userResp = await fetch('/api/current-user-basic');
+        if (userResp.ok) {
+            const user = await userResp.json();
+            document.getElementById('currentUserId').value = user.id;
+            document.getElementById('currentUserUpn').value = user.userPrincipalName;
+            loadFriends(user.id);
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const urlDate = params.get('date');
+        if (urlDate) {
+            document.getElementById('meetingDate').value = urlDate;
+        } else {
+            const today = new Date();
+            document.getElementById('meetingDate').value = today.toISOString().split('T')[0];
+        }
+
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('attendeeDropdown');
+            const tags = document.getElementById('attendeeTags');
+            if (!dropdown.contains(e.target) && !tags.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    });
+
+    async function loadFriends(myId) {
+         try {
+             const resp = await fetch(`/api/friends/${myId}`);
+             allFriends = await resp.json();
+             const params = new URLSearchParams(window.location.search);
+             const targetUpn = params.get('withUser');
+             if (targetUpn) {
+                 const friend = allFriends.find(f => f.userPrincipalName === targetUpn);
+                 if (friend) {
+                     selectedAttendees.push(friend);
+                     updateAttendeeTags();
+                     checkAvailability();
+                 }
+             }
+             renderAttendeeOptions();
+         } catch (e) { console.error(e); }
+     }
+
+    function renderAttendeeOptions() {
+        const container = document.getElementById('attendeeOptions');
+        if(allFriends.length === 0) {
+            container.innerHTML = '<div class="p-3 text-center text-muted small">Brak znajomych w zespole.<br><a href="/Team">Dodaj kogoś</a></div>';
+            return;
+        }
+        container.innerHTML = allFriends.map(f => `
+            <div class="attendee-option ${isSelected(f) ? 'selected' : ''}" onclick="toggleAttendee('${f.userPrincipalName}')">
+                <input type="checkbox" ${isSelected(f) ? 'checked' : ''} style="pointer-events:none;">
+                <span>${escapeHtml(f.displayName)}</span>
+            </div>
+        `).join('');
+    }
+
+    function filterAttendees() {
+        const search = document.getElementById('attendeeSearch').value.toLowerCase();
+        document.querySelectorAll('.attendee-option').forEach(opt => {
+            opt.style.display = opt.textContent.toLowerCase().includes(search) ? 'flex' : 'none';
+        });
+    }
+
+    function isSelected(friend) { return selectedAttendees.some(a => a.userPrincipalName === friend.userPrincipalName); }
+
+    function toggleDropdown() {
+        const dropdown = document.getElementById('attendeeDropdown');
+        dropdown.classList.toggle('show');
+        if (dropdown.classList.contains('show')) document.getElementById('attendeeSearch').focus();
+    }
+
+    function toggleAttendee(upn) {
+        const friend = allFriends.find(f => f.userPrincipalName === upn);
+        if (!friend) return;
+        const index = selectedAttendees.findIndex(a => a.userPrincipalName === upn);
+        if (index > -1) selectedAttendees.splice(index, 1);
+        else selectedAttendees.push(friend);
+        updateAttendeeTags();
+        renderAttendeeOptions();
+        checkAvailability();
+    }
+
+    function updateAttendeeTags() {
+        const container = document.getElementById('attendeeTags');
+        if (selectedAttendees.length === 0) {
+            container.innerHTML = '<span class="text-muted small" id="placeholderText" style="padding: 4px;">Kliknij, aby wybrać uczestników...</span>';
+        } else {
+            container.innerHTML = selectedAttendees.map(a => `
+                <span class="attendee-tag">${escapeHtml(a.displayName)}
+                    <span class="attendee-tag-remove" onclick="event.stopPropagation(); removeAttendee('${a.userPrincipalName}')">×</span>
+                </span>
+            `).join('');
+        }
+    }
+
+    function removeAttendee(upn) {
+        const index = selectedAttendees.findIndex(a => a.userPrincipalName === upn);
+        if (index > -1) selectedAttendees.splice(index, 1);
+        updateAttendeeTags();
+        renderAttendeeOptions();
+        checkAvailability();
+    }
+
+    function formatTime(date) {
+        const h = String(date.getHours()).padStart(2, '0');
+        const m = String(date.getMinutes()).padStart(2, '0');
+        return `${h}:${m}`;
+    }
+
+    function roundToNextQuarter(date) {
+        const ms = 1000 * 60 * 15;
+        return new Date(Math.ceil(date.getTime() / ms) * ms);
+    }
+
+    async function checkAvailability() {
+        const date = document.getElementById('meetingDate').value;
+        const userA = document.getElementById('currentUserUpn').value;
+        const duration = parseInt(document.getElementById('meetingDuration').value);
+        const container = document.getElementById('availabilitySection');
+        const slotsDiv = document.getElementById('slotsContainer');
+
+        if (selectedAttendees.length === 0 || !date) {
+            container.classList.add('d-none');
+            return;
+        }
+
+        container.classList.remove('d-none');
+        slotsDiv.innerHTML = '<div class="spinner-border spinner-border-sm text-primary"></div> <span class="ms-2 text-muted small">Analizuję kalendarze...</span>';
+
+        try {
+            const attendeeUpns = selectedAttendees.map(a => a.userPrincipalName).join(',');
+            const url = `/api/free-slots-multi?userA=${encodeURIComponent(userA)}&attendees=${encodeURIComponent(attendeeUpns)}&date=${date}`;
+            const resp = await fetch(url);
+            const slots = await resp.json();
+
+            slotsDiv.innerHTML = '';
+            if (slots.length === 0) {
+                slotsDiv.innerHTML = '<span class="text-danger small">Brak wspólnych wolnych terminów.</span>';
+                return;
+            }
+
+            slots.forEach(slot => {
+                let cursor = roundToNextQuarter(new Date(slot.start));
+                const slotEnd = new Date(slot.end);
+
+                while (cursor.getTime() + duration * 60000 <= slotEnd.getTime()) {
+                    const startStr = formatTime(cursor);
+
+                    let endCursor = new Date(cursor.getTime() + duration * 60000);
+                    const endStr = formatTime(endCursor);
+
+                    const badge = document.createElement('button');
+                    badge.className = 'btn btn-outline-success btn-sm';
+                    badge.textContent = `${startStr} - ${endStr}`;
+                    badge.type = 'button';
+
+                    const valToSet = startStr;
+                    badge.onclick = () => document.getElementById('meetingTime').value = valToSet;
+
+                    slotsDiv.appendChild(badge);
+
+                    const step = duration >= 45 ? 30 : 15;
+                    cursor = new Date(cursor.getTime() + step * 60000);
+                }
+            });
+
+            if (slotsDiv.innerHTML === '') {
+                slotsDiv.innerHTML = '<span class="text-muted small">Wolne terminy są za krótkie dla wybranego czasu trwania.</span>';
+            }
+
+        } catch (e) {
+            slotsDiv.innerHTML = '<span class="text-warning small">Nie udało się pobrać dostępności.</span>';
+        }
+    }
+
+    async function createMeeting(e) {
+        e.preventDefault();
+
+        if (selectedAttendees.length === 0) {
+            alert('Wybierz przynajmniej jednego uczestnika!');
+            return;
+        }
+
+        const meetingTime = document.getElementById('meetingTime').value;
+        const userA = document.getElementById('currentUserUpn').value;
+        const dateDay = document.getElementById('meetingDate').value;
+        const subject = document.getElementById('meetingSubject').value;
+        const duration = document.getElementById('meetingDuration').value;
+
+        const msgDiv = document.getElementById('resultMessage');
+        const btn = document.getElementById('submitBtn');
+        const attendeeUpns = selectedAttendees.map(a => a.userPrincipalName).join(',');
+        const fullDate = `${dateDay}T${meetingTime}`;
+
+        btn.disabled = true;
+        btn.innerHTML = 'Tworzenie spotkania...';
+        msgDiv.classList.add('d-none');
+
+        try {
+            const url = `/api/create-teams-meeting?userA=${encodeURIComponent(userA)}&attendees=${encodeURIComponent(attendeeUpns)}&date=${encodeURIComponent(fullDate)}&subject=${encodeURIComponent(subject)}&duration=${duration}`;
+
+            const resp = await fetch(url, { method: 'POST' });
+            const result = await resp.json();
+
+            msgDiv.classList.remove('d-none');
+            msgDiv.classList.add('d-block');
+
+            if (result.success) {
+                msgDiv.innerHTML = `
+                    <div class="alert alert-success text-center">
+                        <h4 class="alert-heading">Sukces!</h4>
+                        <p>Spotkanie zostało utworzone.</p>
+                        <hr>
+                        <a href="/Meetings" class="btn btn-primary btn-sm" style="background-color:var(--primary-purple); border:none;">Przejdź do moich spotkań</a>
+                    </div>`;
+                document.getElementById('meetingForm').reset();
+                document.getElementById('meetingDuration').value = "30";
+                selectedAttendees = [];
+                updateAttendeeTags();
+                document.getElementById('availabilitySection').classList.add('d-none');
+            } else {
+                msgDiv.innerHTML = `
+                    <div class="alert alert-danger text-center">
+                        <h5>Błąd</h5>
+                        <p>${escapeHtml(result.error || 'Nieznany błąd')}</p>
+                    </div>`;
+            }
+        } catch (err) {
+            msgDiv.classList.remove('d-none');
+            msgDiv.classList.add('d-block');
+            msgDiv.innerHTML = `<div class="alert alert-danger"><h5>Błąd połączenia</h5><p>${escapeHtml(err.message)}</p></div>`;
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Wyślij zaproszenie Teams';
+        }
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+</script>

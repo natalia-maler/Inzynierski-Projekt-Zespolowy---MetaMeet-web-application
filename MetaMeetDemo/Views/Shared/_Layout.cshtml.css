@@ -1,0 +1,85 @@
+﻿
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #ff6a00 0%, #d7722d 100%);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+    padding-top: 80px;
+}
+
+footer {
+    padding: 15px 0;
+    text-align: center;
+}
+
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 12px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+}
+
+    .topbar h2 {
+        color: #ff7e00;
+        font-size: 18px;
+    }
+
+.nav-btn {
+    color: #ff7e00;
+    background: linear-gradient(135deg, #ff6a00 0%, #d7722d 100%);
+    font-weight: 700;
+    text-decoration: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    margin-left: 8px;
+}
+
+    .nav-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+a.navbar-brand {
+    white-space: normal;
+    word-break: break-all;
+}
+
+a {
+    color: #ff6600;
+}
+
+.nav-link {
+    color: black !important;
+}
+
+.btn-primary {
+    color: white;
+    background-color: #ff6600;
+    border-color: #e65c00;
+}
+
+.app-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .app-logo img {
+        height: 35px;
+        width: auto;
+    }
